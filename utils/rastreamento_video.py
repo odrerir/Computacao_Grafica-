@@ -1,5 +1,5 @@
 import cv2
-
+from utils import filtros
 def rastrear_video():
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -50,11 +50,11 @@ def rastrear_video():
 
         elif modo_filtro == 4:
             cinza = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
-            edges = cv2.canny(cinza)
+            edges = cv2.Canny(cinza, 100, 200)
             output = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
 
         elif modo_filtro == 5:
-            output = cv2.media(output)
+            output = filtros.media(output)
 
         elif modo_filtro == 6:
             if erosao == 1:

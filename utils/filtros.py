@@ -26,25 +26,39 @@ def mediana(imagem, tamanho=3):
     return resultado.astype(np.uint8)
 
 def canny(imagem, limiar=100):
-    # Passo 1: filtro Gaussiano simples (suavização leve)
-    suavizada = media(imagem, tamanho=3)
+    # Passo 1: Suavização com filtro da média
+    suavizada = media(imagem)
+    suavizada = suavizada.astype(np.int32)
 
-    # Passo 2: gradientes com Sobel
-    sobelx = np.array([[-1, 0, 1],
-                       [-2, 0, 2],
-                       [-1, 0, 1]])
+    # Passo 2: Cálculo de gradientes com Sobel (manualmente)
+    altura, largura = suavizada.shape
+    grad_x = np.zeros_like(suavizada, dtype=np.float32)
+    grad_y = np.zeros_like(suavizada, dtype=np.float32)
 
-    sobely = np.array([[-1, -2, -1],
-                       [ 0,  0,  0],
-                       [ 1,  2,  1]])
+    sobel_x = [[-1, 0, 1],
+               [-2, 0, 2],
+               [-1, 0, 1]]
 
-    grad_x = cv2.filter2D(suavizada, -1, sobelx)
-    grad_y = cv2.filter2D(suavizada, -1, sobely)
+    sobel_y = [[-1, -2, -1],
+               [ 0,  0,  0],
+               [ 1,  2,  1]]
 
-    # Magnitude do gradiente
-    magnitude = np.sqrt(grad_x.astype(np.float32)**2 + grad_y.astype(np.float32)**2)
-    magnitude = np.clip(magnitude, 0, 255).astype(np.uint8)
+    for i in range(1, altura - 1):
+        for j in range(1, largura - 1):
+            gx = 0
+            gy = 0
+            for m in range(-1, 2):
+                for n in range(-1, 2):
+                    valor = suavizada[i + m, j + n]
+                    gx += valor * sobel_x[m + 1][n + 1]
+                    gy += valor * sobel_y[m + 1][n + 1]
+            grad_x[i, j] = gx
+            grad_y[i, j] = gy
 
-    # Limiarização simples para realçar bordas fortes
-    _, binarizada = cv2.threshold(magnitude, limiar, 255, cv2.THRESH_BINARY)
-    return binarizada
+    # Passo 3: Magnitude do gradiente
+    magnitude = np.sqrt(grad_x**2 + grad_y**2)
+
+    # Passo 4: Limiarização (binarização)
+    bordas = np.where(magnitude >= limiar, 255, 0).astype(np.uint8)
+
+    return bordas

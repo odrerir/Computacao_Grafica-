@@ -9,7 +9,7 @@ def menu():
     img4 = cv2.imread('ruidos.png')
     img5 = cv2.imread('unequalized.jpg')
 
-    if img1 is None or img2 is None:
+    if img1 is None or img2 is None or img3 is None or img4 is None or img5 is None:
         print("Erro ao carregar imagens")
         return
 
@@ -109,7 +109,7 @@ def menu():
             histograma = medidas_objetos.histograma(cinza)
             print("\n--- Medidas dos Objetos ---")
 
-            medidas_objetos.plot_histogram(histograma, "Histograma de linhas.png", "histograma_unequalized")
+            medidas_objetos.plot_histogram(histograma, "Histograma unequalized.png", "histograma_unequalized")
 
             for m in medidas:
                 print(f"Objeto {m['rotulo']}: Área={m['area']}, Perímetro={m['perimetro']:.2f}, Diâmetro={m['diametro']:.2f}")
