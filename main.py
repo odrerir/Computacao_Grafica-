@@ -19,7 +19,7 @@ def menu():
         print("2. Filtros e bordas em img1 (root.png)")
         print("3. Morfologia em im4g4 (ruidos.png)")
         print("4. Análise em img5 (unequalized.jpg)")
-        print("5. Rastreamento de objeto (câmera)")
+        print("5. Operacoes com a camera")
         print("0. Sair")
         escolha = input("Escolha: ")
 
@@ -32,13 +32,13 @@ def menu():
             print("3. Binarização (Otsu)")
             op = input("Escolha: ")
             if op == "1":
-                cinza = cv2.imread(img3, cv2.COLOR_GRAYSCALE)
+                cinza = cv2.cvtColor(img3, cv2.COLOR_BGR2GRAY)
                 cv2.imshow("Cinza - img3", cinza)
             elif op == "2":
                 negativo = 255 - img3
                 cv2.imshow("Negativo - img3", negativo)
             elif op == "3":
-                cinza = cv2.imread(img3, cv2.COLOR_GRAYSCALE)
+                cinza = cv2.cvtColor(img3, cv2.COLOR_BGR2GRAY)
                 binaria = segmentacao.otsu_binarizacao(cinza)
                 cv2.imshow("Binária Otsu - img3", binaria)
             else:
@@ -50,7 +50,8 @@ def menu():
             print("2. Mediana")
             print("3. Canny")
             op = input("Escolha: ")
-            cinza = cv2.imread(img1, cv2.COLOR_GRAYSCALE)
+            cinza = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+
             if op == "1":
                 suavizada = filtros.media(cinza)
                 cv2.imshow("Média - img1", suavizada)
@@ -73,9 +74,9 @@ def menu():
                 tipo_imagem = input("Escolha: ")
 
             if tipo_imagem == "1":
-                cinza = segmentacao.otsu_binarizacao(img4)
+                img = segmentacao.otsu_binarizacao(img4)
             else:
-                cinza = cv2.imread(img3, cv2.COLOR_GRAYSCALE)
+                img = cv2.cvtColor(img4, cv2.COLOR_BGR2GRAY)
 
             print("1. Erosão")
             print("2. Dilatação")
@@ -83,16 +84,16 @@ def menu():
             print("4. Fechamento")
             op = input("Escolha: ")
             if op == "1":
-                resultado = morfologia.erosao(cinza)
+                resultado = morfologia.erosao(img)
                 cv2.destroyAllWindows()
             elif op == "2":
-                resultado = morfologia.dilatacao(cinza)
+                resultado = morfologia.dilatacao(img)
                 cv2.destroyAllWindows()
             elif op == "3":
-                resultado = morfologia.abertura(cinza)
+                resultado = morfologia.abertura(img)
                 cv2.destroyAllWindows()
             elif op == "4":
-                resultado = morfologia.fechamento(cinza)
+                resultado = morfologia.fechamento(img)
                 cv2.destroyAllWindows()
             else:
                 print("Opção inválida.")
@@ -101,11 +102,11 @@ def menu():
             cv2.waitKey(0)
 
         elif escolha == "4":
-            cinza = cv2.imread(img5, cv2.IMREAD_GRAYSCALE)
+            cinza = cv2.cvtColor(img5, cv2.COLOR_BGR2GRAY)
             binaria = segmentacao.otsu_binarizacao(cinza)
             rotulada, num = segmentacao.crescimento_regiao(binaria)
             medidas = medidas_objetos.medidas_por_objeto(rotulada)
-            histograma = medidas_objetos.histograma(rotulada)
+            histograma = medidas_objetos.histograma(cinza)
             print("\n--- Medidas dos Objetos ---")
 
             medidas_objetos.plot_histogram(histograma, "Histograma de linhas.png", "histograma_unequalized")
